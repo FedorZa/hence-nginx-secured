@@ -32,6 +32,10 @@ location ~* /Makefile {
   deny all;
 }
 
+location ~* \.sh {
+  deny all;
+}
+
 location ~* \.mysql {
   deny all;
 }
