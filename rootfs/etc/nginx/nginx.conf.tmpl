@@ -1,0 +1,38 @@
+daemon off;
+user $HENCE_APP_USER;
+
+error_log stderr warn;
+
+pid /var/run/nginx.pid;
+worker_processes 5;
+
+events {
+  worker_connections 4096;
+}
+
+http {
+  access_log /dev/stdout;
+  sendfile on;
+
+  include $HENCE_APP_VOL_PREFIX/conf/mime.types;
+  include $HENCE_APP_VOL_PREFIX/conf/fastcgi.conf;
+
+  default_type application/octet-stream;
+
+  tcp_nopush on;
+
+  client_body_temp_path /var/lib/nginx/client_body 1 2;
+  fastcgi_temp_path /var/lib/nginx/fastcgi_temp 1 2;
+
+  client_max_body_size 0;
+
+  include /etc/nginx/custom.d/*.conf;
+  
+  server {
+    $NGINX_STATUS_INCLUDE
+    $NGINX_HTPASSWD_INCLUDE
+    $NGINX_SSL_INCLUDE
+    include $HENCE_APP_VOL_PREFIX/conf/presets/default.conf;
+	include /etc/nginx/preset_addon.d/*.conf;
+  }
+}
